@@ -1,5 +1,5 @@
 variable "user_id" {
-  default = "sorin"
+  default = "rabru"
 }
 
 variable "aws_region" {
@@ -30,11 +30,11 @@ variable "private_subnet_cidr" {
 }
 
 variable "cluster-name" {
-  default = "terraform-eks-demo"
+  default = "RaB-terraform-eks-demo"
   type    = string
 }
 
 variable "key_name" {
-  default = "ee-default-keypair"
+  default = "RaB_AWS_public"
   type    = string
 }
