@@ -19,7 +19,7 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "iam_nginx_profile" {
-  name = "web_instance_profile"
+  name = "RaB_web_instance_profile"
   role = "web_iam_role"
 }
 
