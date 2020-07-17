@@ -13,7 +13,7 @@ Resources:
   RaBrIAMRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: RaBeksworkshop-admin
+      RoleName: RaB-eksworkshop-admin
       Path: /
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AdministratorAccess
