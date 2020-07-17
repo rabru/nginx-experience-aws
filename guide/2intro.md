@@ -146,9 +146,10 @@ terraform in path
 
 15. Clone the Workshop Repo:
 ```
-git clone https://github.com/sorinboia/nginx-experience-aws
+git clone https://github.com/rabru/nginx-experience-aws
 cd nginx-experience-aws/
 ```
+16. _[RaB] You should also modify in `terraform/variables.tf` file the `user_id` and the `key_name` towards your name and your own key. To follow the workshop this is not necessary, as long the key_name is already existing. But if you would like to access the created systems, you should modify these settings._
 
 &nbsp;&nbsp;
 
