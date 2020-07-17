@@ -46,6 +46,7 @@ This workshop creates an AWS account and a Cloud9 environment. You will need the
 
 ## CloudFormation
 5. Once you have completed the step above, please deploy the following template:
+   _[RaB]: Since we share one environment, we need to make sure, that we create the Cloud9 environment with different naming's. Therefor you need to download the [nginx.yaml](../cloud9/nginx.yaml) file and replace all RaB in it with your own initials. After that click on the Launch button below and select "Upload a template file" to upload the nginx.yaml file. Additional you should go to "View in Designer" to verify that the changes have been used. Be aware that you need to replace RaB in all following naming accordingly._
 
 [![Launch Stack](images/cfls.svg)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=NGINX-EKS&templateURL=https://artl-cfn-templates.s3.eu-central-1.amazonaws.com/nginx.yaml)
 
@@ -75,7 +76,7 @@ Click `Create stack`.
 
 &nbsp;&nbsp;
 
-9. Choose **eksworkshop-admin** from the **IAM Role** drop down, and select **Apply**
+9. Choose **RaB-eksworkshop-admin** from the **IAM Role** drop down, and select **Apply**
 
 &nbsp;&nbsp;
 
@@ -118,7 +119,7 @@ rm -vf ${HOME}/.aws/credentials
 Use the [GetCallerIdentity](https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html) CLI command to validate that the Cloud9 IDE is using the correct IAM role.
 
 ```
-aws sts get-caller-identity --query Arn | grep eksworkshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+aws sts get-caller-identity --query Arn | grep RaB-eksworkshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
 ```
 
 If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span>. Go back and confirm the steps on this page.
