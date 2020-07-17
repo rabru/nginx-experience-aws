@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Cloud9 IDE
+Resources:
+  RaBrC9Env:
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      Name: ideNGINX
+      Repositories:
+        - PathComponent: /labs
+          RepositoryUrl: https://github.com/ArtiomL/aws-labs.git
+      InstanceType: t3.small
+      AutomaticStopTimeMinutes: 60
+  RaBrIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: RaBeksworkshop-admin
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+  rIAMInProf:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: RaB-eksworkshop-admin
+      Path: /
+      Roles:
+        -
+          Ref: RaBrIAMRole
