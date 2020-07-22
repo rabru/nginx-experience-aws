@@ -76,7 +76,7 @@ Click `Create stack`.
 
 &nbsp;&nbsp;
 
-9. Choose **RaB-eksworkshop-admin** from the **IAM Role** drop down, and select **Apply**
+9. Choose **RaB-eksworkshop-admin-RaB** from the **IAM Role** drop down, and select **Apply**
 
 &nbsp;&nbsp;
 
