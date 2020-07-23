@@ -1,16 +1,16 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Cloud9 IDE
 Resources:
-  rC9EnvRaB:
+  rC9Env:
     Type: AWS::Cloud9::EnvironmentEC2
     Properties:
-      Name: ideNGINX
+      Name: ideNGINX-RaB
       Repositories:
         - PathComponent: /labs
           RepositoryUrl: https://github.com/ArtiomL/aws-labs.git
       InstanceType: t3.small
       AutomaticStopTimeMinutes: 60
-  rIAMRoleRaB:
+  rIAMRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: eksworkshop-admin-RaB
@@ -33,4 +33,4 @@ Resources:
       Path: /
       Roles:
         -
-          Ref: rIAMRoleRaB
+          Ref: rIAMRole
