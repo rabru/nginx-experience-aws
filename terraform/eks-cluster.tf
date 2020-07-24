@@ -1,5 +1,5 @@
 resource "aws_iam_role" "demo-master" {
-  name = "terraform-eks-demo-cluster"
+  name = "terraform-eks-demo-cluster-${var.suffix}"
 
   assume_role_policy = <<POLICY
 {
@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "demo-cluster-AmazonEKSServicePolicy" 
 
 
 resource "aws_eks_cluster" "demo" {
-  name            = var.cluster-name
+  name            = "${var.cluster-name}-${var.suffix}"
   role_arn        = aws_iam_role.demo-master.arn
 
   vpc_config {
