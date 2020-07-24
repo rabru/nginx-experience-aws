@@ -1,5 +1,5 @@
 resource "aws_iam_role" "web_iam_role" {
-  name               = "web_iam_role"
+  name               = "web_iam_role_${var.suffix}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -19,12 +19,12 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "iam_nginx_profile" {
-  name = "RaB_web_instance_profile"
+  name = "web_instance_profile_${var.suffix}"
   role = "web_iam_role"
 }
 
 resource "aws_iam_role_policy" "web_iam_role_policy" {
-  name   = "web_iam_role_policy"
+  name   = "web_iam_role_policy_${var.suffix}"
   role   = aws_iam_role.web_iam_role.id
   policy = <<EOF
 {
