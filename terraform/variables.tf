@@ -1,3 +1,7 @@
+variable "suffix" {
+  default = "RaB"
+}
+
 variable "user_id" {
   default = "rabru"
 }
