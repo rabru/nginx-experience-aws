@@ -1,5 +1,5 @@
 resource "aws_iam_role" "demo-node" {
-  name = "terraform-eks-demo-node"
+  name = "terraform-eks-demo-node-${var.suffix}"
 
   assume_role_policy = <<POLICY
 {
