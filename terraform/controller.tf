@@ -20,7 +20,7 @@ EOF
 
 resource "aws_iam_instance_profile" "iam_nginx_profile" {
   name = "web_instance_profile_${var.suffix}"
-  role = "web_iam_role"
+  role = aws_iam_role.web_iam_role.id
 }
 
 resource "aws_iam_role_policy" "web_iam_role_policy" {
