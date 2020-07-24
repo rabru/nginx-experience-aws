@@ -2,7 +2,7 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "sorin_vpc nginx"
+    Name = "sorin_vpc nginx ${var.suffix}"
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "VPC IGW"
+    Name = "VPC IGW ${var.suffix}"
   }
 }
 
@@ -75,7 +75,7 @@ resource "aws_route_table_association" "web-private-rt" {
 }
 
 resource "aws_security_group" "sgweb" {
-  name        = "sg_test_web"
+  name        = "sg_test_web_${var.suffix}"
   description = "Allow traffic from public subnet"
 
   ingress {
