@@ -149,7 +149,7 @@ terraform in path
 git clone https://github.com/rabru/nginx-experience-aws
 cd nginx-experience-aws/
 ```
-16. _[RaB] You should also modify in `terraform/variables.tf` file the `user_id` and the `key_name` towards your name and your own key. To follow the workshop this is not necessary, as long the key_name is already existing. But if you would like to access the created systems, you should modify these settings._
+16. _[RaB] Next we need to do some modifications in the `terraform/variables.tf` file. If you have more than one deployments in your environment, you need to modify the `suffix` to avoid name collisions. Also you might change the `user_id` and the `key_name` towards your preferred name and your own key. To follow the workshop this is not necessary, as long the key_name does already exist. But if you would like to access the created systems, you should modify these settings._
 
 &nbsp;&nbsp;
 
