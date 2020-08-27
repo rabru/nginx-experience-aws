@@ -206,6 +206,8 @@ kubectl apply -f files/5ingress/ingress-arcadia.yaml
 12. Browse to the Arcadia website with http and you will be automatically redirected to https.  
 Look at the Nginx dashboard and observe that Nginx has started monitoring the pods.
 
+#### [RaB: Short cut to the security part](7security.md)
+
 Speed up application performance and enable caching.
 
 13. Create a new file `nginx-config.yaml` that reflects the bellow configuration and apply it. We are telling Nginx to create a caching entity that will be used by our Ingress.  
