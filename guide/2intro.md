@@ -106,15 +106,7 @@ This will open a cloud-based integrated development environment (IDE) that lets 
 
 &nbsp;&nbsp;
 
-12. To ensure temporary credentials aren't already in place we will also remove any existing credentials file:
-  
-```sh
-rm -vf ${HOME}/.aws/credentials
-```
-
-&nbsp;&nbsp;
-
-13. Validate the IAM role:
+12. Validate the IAM role:
   
 Use the [GetCallerIdentity](https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html) CLI command to validate that the Cloud9 IDE is using the correct IAM role.
 
@@ -126,7 +118,7 @@ If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span
 
 &nbsp;&nbsp;
 
-14. Run the following command to install all the software tools required to run the workshop:
+13. Run the following command to install all the software tools required to run the workshop:
 
 ```
 labs/eks/install.sh
@@ -144,12 +136,12 @@ terraform in path
 
 &nbsp;&nbsp;
 
-15. Clone the Workshop Repo:
+14. Clone the Workshop Repo:
 ```
 git clone https://github.com/rabru/nginx-experience-aws
 cd nginx-experience-aws/
 ```
-16. _[RaB] Next we need to do some modifications in the `terraform/variables.tf` file. If you have more than one deployments in your environment, you need to modify the `suffix` to avoid name collisions. Also you might change the `user_id` and the `key_name` towards your preferred name and your own key. To follow the workshop this is not necessary, as long the key_name does already exist. But if you would like to access the created systems, you should modify these settings._
+15. _[RaB] Next we need to do some modifications in the `terraform/variables.tf` file. If you have more than one deployments in your environment, you need to modify the `suffix` to avoid name collisions. Also you might change the `user_id` and the `key_name` towards your preferred name and your own key. To follow the workshop this is not necessary, as long the key_name does already exist. But if you would like to access the created systems, you should modify these settings._
 
 &nbsp;&nbsp;
 
