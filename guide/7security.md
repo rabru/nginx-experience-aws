@@ -16,7 +16,7 @@ In the case you just did the installation of the Kubernetes environment in the t
 Commands:
 kubectl apply -f files/5ingress/2arcadia.yaml
 kubectl apply -f files/5ingress/nginx-ingress-install.yaml
-sleep 3
+sleep 3 # Wait for hostname assignment
 sed "s/{{hostname}}/`kubectl get svc --namespace=nginx-ingress | grep '^nginx-ingress' | awk '{print $4}'`/g" files/5ingress/ingress-arcadia.template > files/5ingress/ingress-arcadia.yaml
 kubectl apply -f files/5ingress/ingress-arcadia.yaml
 echo "Arcadia Domain: `kubectl get svc --namespace=nginx-ingress | grep "^nginx-ingress" | awk '{print $4}'`"
