@@ -20,6 +20,33 @@ sleep 3 # Wait for hostname assignment
 sed "s/{{hostname}}/`kubectl get svc --namespace=nginx-ingress | grep '^nginx-ingress' | awk '{print $4}'`/g" files/5ingress/ingress-arcadia.template > files/5ingress/ingress-arcadia.yaml
 kubectl apply -f files/5ingress/ingress-arcadia.yaml
 echo "Arcadia Domain: `kubectl get svc --namespace=nginx-ingress | grep "^nginx-ingress" | awk '{print $4}'`"
+
+Output:
+AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master) $ kubectl apply -f files/5ingress/2arcadia.yaml
+deployment.apps/arcadia-main created
+deployment.apps/arcadia-app2 created
+deployment.apps/arcadia-app3 created
+service/arcadia-backend created
+AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master) $ kubectl apply -f files/5ingress/nginx-ingress-install.yaml
+namespace/nginx-ingress created
+serviceaccount/nginx-ingress created
+clusterrole.rbac.authorization.k8s.io/nginx-ingress created
+clusterrolebinding.rbac.authorization.k8s.io/nginx-ingress created
+secret/default-server-secret created
+configmap/nginx-config created
+customresourcedefinition.apiextensions.k8s.io/virtualservers.k8s.nginx.org created
+customresourcedefinition.apiextensions.k8s.io/virtualserverroutes.k8s.nginx.org created
+customresourcedefinition.apiextensions.k8s.io/transportservers.k8s.nginx.org created
+customresourcedefinition.apiextensions.k8s.io/globalconfigurations.k8s.nginx.org created
+deployment.apps/nginx-ingress created
+service/nginx-ingress created
+error: unable to recognize "files/5ingress/nginx-ingress-install.yaml": no matches for kind "GlobalConfiguration" in version "k8s.nginx.org/v1alpha1"
+AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master) $ sleep 3 # Wait for hostname assignment
+AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master) $ sed "s/{{hostname}}/`kubectl get svc --namespace=nginx-ingress | grep '^nginx-ingress' | awk '{print $4}'`/g" files/5ingress/ingress-arcadia.template > files/5ingress/ingress-arcadia.yaml
+AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master) $ kubectl apply -f files/5ingress/ingress-arcadia.yaml
+error: error parsing files/5ingress/ingress-arcadia.yaml: error converting YAML to JSON: yaml: line 23: could not find expected ':'
+AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master) $ echo "Arcadia Domain: `kubectl get svc --namespace=nginx-ingress | grep "^nginx-ingress" | awk '{print $4}'`"
+Arcadia Domain: adbcd4dd753394f5e9accb36aa98d349-1628010101.eu-central-1.elb.amazonaws.com
 </pre>
 
 2. Create the Nginx WAF config, which can be found in the "files/7waf/waf-config.yaml" file.  
