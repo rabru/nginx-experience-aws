@@ -14,7 +14,7 @@ In the case you just did the installation of the Kubernetes environment in the t
 
 <pre>
 Commands:
-kubectl apply -f files/5ingress/1arcadia.yamlIn the case you just did the instalation of the Kubernetes environment in the terraform section, you need to run the following commands to get the basic environment installed to continue with the security part. If you alredy deployed the arcadia application including the ssl termination, you can skip this section.
+kubectl apply -f files/5ingress/2arcadia.yaml
 kubectl apply -f files/5ingress/nginx-ingress-install.yaml
 sleep 3
 sed "s/{{hostname}}/`kubectl get svc --namespace=nginx-ingress | grep '^nginx-ingress' | awk '{print $4}'`/g" files/5ingress/ingress-arcadia.template > files/5ingress/ingress-arcadia.yaml
