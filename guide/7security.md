@@ -54,7 +54,7 @@ AWSReservedSSO_Users_be6c956878866560:~/environment/nginx-experience-aws (master
 Arcadia Domain: a74abc3a08f6046fda7ece488f172c48-475441107.eu-central-1.elb.amazonaws.com
 </pre>
 
-Open the Arcadia Domain in your prefered Web-Browser.
+Open the Arcadia Domain in your prefered web browser.
 
 :warning: Please note that it takes some minutes until the Arcadia application is available.
 
