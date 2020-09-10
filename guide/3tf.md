@@ -77,3 +77,6 @@ cd ..
 Next we will move on to deploying the application.
 
 #### [Next part](4unit.md)
+
+If you just would like to do the security part, you can go there directly and execute the first section to install the necessary environment.
+#### [RaB: Short cut to the security part](7security.md)
