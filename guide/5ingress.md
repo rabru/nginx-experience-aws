@@ -67,12 +67,6 @@ Browse to the following location and verify you can see the dashboard: `http://<
 Note the EXTERNAL-IP of the "nginx-ingress". This is the hostname that we are going to use in order to publish the Arcadia web application.  
 Browse to the following location and verify that you receive a 404 status code: `http://<INGRESS-EXTERNAL-IP>/`  
 
-To use the external IP later in a ConfigMap, we store it in a kubernetes secret:
-
-<pre>
-kubectl create secret generic nginx-ingress --from-literal=domain=`kubectl get svc --namespace=nginx-ingress | grep "^nginx-ingress" | awk '{print $4}'`
-</pre>
-
 :warning: Please note that it might take some time for the DNS names to become available.
 
 
