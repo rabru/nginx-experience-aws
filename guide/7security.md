@@ -8,7 +8,21 @@ In our scenario, since we decided our Nginx WAF to be enabled on a per-pod basis
 We'll be able to bring security closer to the application and the development cycle and integrate it into CI/CD pipelines.  
 This will allow to minimize false positives, since the WAF policy becomes a part of the application and is always tested as such.  
 
-1. Create the Nginx WAF config, which can be found in the "files/7waf/waf-config.yaml" file.  
+1. RaB - Application deployment with NGINX ingress-controller
+
+In the case you just did the installation of the Kubernetes environment in the terraform section, you need to run the following commands to get the basic environment installed to continue with the security part. If you already deployed the arcadia application including the SSL termination, you can skip this section.
+
+<pre>
+Commands:
+kubectl apply -f files/5ingress/1arcadia.yamlIn the case you just did the instalation of the Kubernetes environment in the terraform section, you need to run the following commands to get the basic environment installed to continue with the security part. If you alredy deployed the arcadia application including the ssl termination, you can skip this section.
+kubectl apply -f files/5ingress/nginx-ingress-install.yaml
+sleep 3
+sed "s/{{hostname}}/`kubectl get svc --namespace=nginx-ingress | grep '^nginx-ingress' | awk '{print $4}'`/g" files/5ingress/ingress-arcadia.template > files/5ingress/ingress-arcadia.yaml
+kubectl apply -f files/5ingress/ingress-arcadia.yaml
+echo "Arcadia Domain: `kubectl get svc --namespace=nginx-ingress | grep "^nginx-ingress" | awk '{print $4}'`"
+</pre>
+
+2. Create the Nginx WAF config, which can be found in the "files/7waf/waf-config.yaml" file.  
 
 <pre>
 Command:
@@ -99,14 +113,14 @@ The WAF policy is json based and from the example bellow, you can observe how al
     }
 </pre>
 
-2. Deploy ELK in order to be able to visualize and analyze the traffic going through the Nginx WAF:  
+3. Deploy ELK in order to be able to visualize and analyze the traffic going through the Nginx WAF:  
 
 <pre>
 Command:
 kubectl apply -f files/7waf/elk.yaml
 </pre>
 
-3. In order to connect to our ELK pod, we will need to find the public address of this service:  
+4. In order to connect to our ELK pod, we will need to find the public address of this service:  
 
 <pre>
 Command:
@@ -117,11 +131,11 @@ NAME      TYPE           CLUSTER-IP      EXTERNAL-IP                            
 elk-web   LoadBalancer   172.20.179.34   a28bd2d8c94214ae0b512274daa06211-2103709514.eu-central-1.elb.amazonaws.com   5601:32471/TCP,9200:32589/TCP,5044:31876/TCP   16h
 </pre>
 
-4. Verify that ELK is up and running by browsing to: `http://[ELK-EXTERNAL-IP]:5601/`.  
+5. Verify that ELK is up and running by browsing to: `http://[ELK-EXTERNAL-IP]:5601/`.  
 
 :warning: Please note that it might take some time for the DNS name to become available.
 
-5. Next, we need to change our deployment configuration so it includes the Nginx WAF.
+6. Next, we need to change our deployment configuration so it includes the Nginx WAF.
 <pre>
 Commands:
 kubectl apply -f files/7waf/arcadia-main.yaml
@@ -132,15 +146,15 @@ kubectl apply -f files/7waf/arcadia-backend.yaml
 
 All of our services are protected and monitored.
 
-6. Browse again to the Arcadia web app and verify that it is still working.  
+7. Browse again to the Arcadia web app and verify that it is still working.  
 
-7. Let's simulate a Cross Site Scripting (XSS) attack, and make sure it's blocked:  
+8. Let's simulate a Cross Site Scripting (XSS) attack, and make sure it's blocked:  
 
 `https://<INGRESS-EXTERNAL-IP>/trading/index.php?a=%3Cscript%3Ealert(%27xss%27)%3C/script%3E`
 
 Each of the blocked requests will generate a support ID, save it for later.  
 
-8. Browse to the ELK as before and click the "Discover" button:  
+9. Browse to the ELK as before and click the "Discover" button:  
 
 ![](images/kibana1.JPG)  
 
@@ -151,13 +165,13 @@ Here, you'll see all the request logs, allowed and blocked, sent by the Nginx WA
 Let's look for the reason why our attack requests were blocked.  
 
 
-9. Add a filter with the support ID you have received as seen bellow:
+10. Add a filter with the support ID you have received as seen bellow:
   
 ![](images/kibana2.JPG)  
 
 In the right side of the panel, you can see the full request log and the reason why it was blocked.  
 
-10. Continue and explore the visualization capabilities of Kibana and log information from Nginx WAF by looking into the next two sections bellow the "Discover" button (Visualize and Dashboard -> Overview).  
+11. Continue and explore the visualization capabilities of Kibana and log information from Nginx WAF by looking into the next two sections bellow the "Discover" button (Visualize and Dashboard -> Overview).  
 
   
 
