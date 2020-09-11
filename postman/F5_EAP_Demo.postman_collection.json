@@ -1,0 +1,1088 @@
+{
+	"info": {
+		"_postman_id": "5e1506b0-3293-464a-bf1d-aea66c41f90c",
+		"name": "F5_EAP_Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Subscription",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c3744b9-9344-422f-ac67-be15e2cb0c19",
+								"exec": [
+									"pm.test(\"Set token variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.globals.set(\"ACCESS_TOKEN\", jsonData.access_token);",
+									"    pm.globals.set(\"LIMITED_ACCESS_TOKEN\", jsonData.access_token);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"{{USER_EMAIL}}\", \"password\": \"{{USER_PASSWORD}}\" }"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-auth/login",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c8c1a027-741a-4c55-bf29-6edc64814776",
+								"exec": [
+									"pm.test(\"Set account_id and user_id variables\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (!pm.globals.get(\"ACCOUNT_ID\")) {",
+									"        pm.globals.set(\"ACCOUNT_ID\", jsonData.primary_account_id);",
+									"    }",
+									"    pm.globals.set(\"USER_ID\", jsonData.id);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-account/user",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-account",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Membership",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9bd589bb-d78f-4fd9-8f95-4408ee82acf9",
+								"exec": [
+									"pm.test(\"Switch account\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    var account_name = pm.environment.get(\"ACCOUNT_NAME\");",
+									"    for(var i=0; i<jsonData.memberships.length; i++) {",
+									"        if ( jsonData.memberships[i].account_name === account_name ) {",
+									"            pm.globals.set(\"ACCOUNT_ID\", jsonData.memberships[i].account_id);",
+									"        }",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-account/users/{{USER_ID}}/memberships",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-account",
+								"users",
+								"{{USER_ID}}",
+								"memberships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Catalogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "41027a6c-9331-45a5-a473-d80dcf4d2306",
+								"exec": [
+									"pm.test(\"Set Catalog variables\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    for(var i=0; i<jsonData.Catalogs.length; i++) {",
+									"        if (jsonData.Catalogs[i].service_type === \"waf\") {",
+									"            pm.globals.set(\"WAF_CATALOG_ID\", jsonData.Catalogs[i].catalog_id);",
+									"        }",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-catalog/catalogs",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-catalog",
+								"catalogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to Catalog (if needed)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_id\": \"{{ACCOUNT_ID}}\",\n    \"catalog_id\": \"{{WAF_CATALOG_ID}}\"\n}"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-account/accounts/{{ACCOUNT_ID}}/catalogs",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-account",
+								"accounts",
+								"{{ACCOUNT_ID}}",
+								"catalogs"
+							]
+						},
+						"description": "Hardcoded catalog ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Certificates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b4bb736-4fe2-4711-a7eb-9f0bc4249a54",
+								"exec": [
+									"pm.test(\"Switch account\", function() {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var ssl_cn = pm.environment.get(\"SSL_CN\");\r",
+									"    for(var i=0; i<jsonData.certificates.length; i++) {\r",
+									"        if ( jsonData.certificates[i].common_name === ssl_cn ) {\r",
+									"            pm.globals.set(\"CERT_ID\", jsonData.certificates[i].id);\r",
+									"        }\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-certificates/certificates/{{ACCOUNT_ID}}",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-certificates",
+								"certificates",
+								"{{ACCOUNT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Certificate (if needed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9a6f2c09-ee27-44cc-b86c-81e9e47d41c7",
+								"exec": [
+									"pm.test(\"Switch account\", function() {\r",
+									"    var jsonData = pm.response.json();\r",
+									"        pm.globals.set(\"CERT_ID\", jsonData.id);\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account_id\": \"{{ACCOUNT_ID}}\",\r\n    \"certificate\": \"{{SSL_CRT}}\",\r\n    \"private_key\": \"{{SSL_KEY}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-certificates/certificates",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-certificates",
+								"certificates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Certificates - not working",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0d741b2a-0ebc-4461-991f-2820121d2750",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-certificates/certificates/{{ACCOUNT_ID}}",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-certificates",
+								"certificates",
+								"{{ACCOUNT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create EAP Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "72bf947e-c67d-440b-a9b8-882f5ea573a8",
+								"exec": [
+									"pm.test(\"Set EAP subscription id variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.globals.set(\"WAF_SUBSCRIPTION_ID\", jsonData.subscription_id);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_id\": \"{{ACCOUNT_ID}}\",\n    \"catalog_id\": \"{{WAF_CATALOG_ID}}\",\n    \"service_instance_name\": \"{{APP_NAME}}\",\n    \"configuration\": {\n        \"waf_service\": {\n            \"application\": {\n                \"description\": \"REST Call generated\",\n                \"fqdn\": \"{{APP_FQDN}}\",\n                \"http\": {\n                    \"enabled\": true,\n                    \"https_redirect\": true,\n                    \"port\": 80\n                },\n                \"https\": {\n                    \"enabled\": true,\n                    \"port\": 443,\n                    \"tls\": {\n                        \"certificate_id\": \"{{CERT_ID}}\"\n                    }\n                },\n                \"waf_regions\": {\n                    \"aws\": {\n                        \"{{WAF_AWS_REGION}}\": {\n                            \"endpoint\": {\n                                \"https\": {\n                                    \"enabled\": true,\n                                    \"port\": 443\n\t\t\t\t\t\t        },\n                                \"ips\": {{APP_IP_LIST}}\n                            }\n                        }\n                    }\n                }\n            },\n            \"policy\": {\n                \"encoding\": \"utf-8\",\n                \"threat_campaigns\": {\n                    \"enabled\": true,\n                    \"enforcement_mode\": \"blocking\"\n                },\n                \"compliance_enforcement\": {\n                    \"data_guard\": {\n                        \"enabled\": true,\n                        \"cc\": true,\n                        \"ssn\": true\n                    },\n                    \"sensitive_parameters\": {\n                        \"enabled\": true,\n                        \"parameters\": [\n                            \"cc_id\",\n                            \"creditcard\",\n                            \"passwd\",\n                            \"password\"\n                        ],\n                        \"xml_attributes\": [],\n                        \"xml_elements\": []\n                    }\n                },\n                \"high_risk_attack_mitigation\": {\n                    \"enabled\": true,\n                    \"enforcement_mode\": \"blocking\",\n                    \"signature_enforcement\": {\n                        \"enabled\": true\n                    },\n                    \"allowed_methods\": {\n                        \"enabled\": true,\n                        \"methods\": [\n                            {\n                                \"name\": \"GET\"\n                            },\n                            {\n                                \"name\": \"POST\"\n                            },\n                            {\n                                \"name\": \"HEAD\"\n                            }\n                        ]\n                    },\n                    \"disallowed_file_types\": {\n                        \"enabled\": true,\n                        \"file_types\": [\n                            \"back\",\n                            \"bat\",\n                            \"bck\",\n                            \"bin\",\n                            \"cfg\",\n                            \"cmd\",\n                            \"com\",\n                            \"config\",\n                            \"dat\",\n                            \"dll\",\n                            \"eml\",\n                            \"exe\",\n                            \"exe1\",\n                            \"exe_renamed\",\n                            \"hta\",\n                            \"htr\",\n                            \"htw\",\n                            \"ida\",\n                            \"idc\",\n                            \"idq\",\n                            \"ini\",\n                            \"old\",\n                            \"sav\",\n                            \"save\"\n                        ]\n                    },\n                    \"api_compliance_enforcement\": {\n                        \"enabled\": true\n                    },\n                    \"http_compliance_enforcement\": {\n                        \"enabled\": true\n                    },\n                    \"websocket_compliance_enforcement\": {\n                        \"enabled\": true\n                    },\n                    \"geolocation_enforcement\": {\n                        \"disallowed_country_codes\": [\n                            \"CU\",\n                            \"IR\",\n                            \"KP\",\n                            \"LY\",\n                            \"SD\",\n                            \"SY\"\n                        ],\n                        \"enabled\": true\n                    },\n                    \"ip_enforcement\": {\n                        \"enabled\": true,\n                        \"ips\": []\n                    }\n                },\n                \"malicious_ip_enforcement\": {\n                    \"enabled\": true,\n                    \"enforcement_mode\": \"blocking\",\n                    \"ip_categories\": [\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"mobile_threats\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"cloud_services\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"anonymous_proxies\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"phishing_proxies\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"infected_sources\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"denial_of_service\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"scanners\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"bot_nets\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"web_attacks\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"windows_exploits\"\n                        },\n                        {\n                            \"block\": true,\n                            \"log\": true,\n                            \"name\": \"spam_sources\"\n                        }\n                    ]\n                }\n            }\n        }\n    },\n    \"service_type\": \"waf\"\n}"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate EAP Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subscription_id\": \"{{WAF_SUBSCRIPTION_ID}}\",\n  \"omit_config\": true\n}"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions/{{WAF_SUBSCRIPTION_ID}}/activate",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions",
+								"{{WAF_SUBSCRIPTION_ID}}",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EAP Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b9ff66e8-9b4f-4ef9-b09b-8a87fafe753c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions/{{WAF_SUBSCRIPTION_ID}}",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions",
+								"{{WAF_SUBSCRIPTION_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EAP Subscription List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "91942723-cbea-401a-8eaa-d0d31d199ecf",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions?account_id={{ACCOUNT_ID}}&service_type=waf",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions"
+							],
+							"query": [
+								{
+									"key": "account_id",
+									"value": "{{ACCOUNT_ID}}"
+								},
+								{
+									"key": "service_type",
+									"value": "waf"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Modify Subscription",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f016ce4d-a8d2-402e-95a6-8cd9f1b3dfb2",
+								"exec": [
+									"pm.test(\"Set token variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.globals.set(\"ACCESS_TOKEN\", jsonData.access_token);",
+									"    pm.globals.set(\"LIMITED_ACCESS_TOKEN\", jsonData.access_token);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"{{USER_EMAIL}}\", \"password\": \"{{USER_PASSWORD}}\" }"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-auth/login",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cc6b43aa-4907-49ee-8516-69f774e21c30",
+								"exec": [
+									"pm.test(\"Set account_id and user_id variables\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (!pm.globals.get(\"ACCOUNT_ID\")) {",
+									"        pm.globals.set(\"ACCOUNT_ID\", jsonData.primary_account_id);",
+									"    }",
+									"    pm.globals.set(\"USER_ID\", jsonData.id);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-account/user",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-account",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Membership",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7dcd8920-1799-4660-b9f6-bc58ecb15995",
+								"exec": [
+									"pm.test(\"Switch account\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    var account_name = pm.environment.get(\"ACCOUNT_NAME\");",
+									"    for(var i=0; i<jsonData.memberships.length; i++) {",
+									"        if ( jsonData.memberships[i].account_name === account_name ) {",
+									"            pm.globals.set(\"ACCOUNT_ID\", jsonData.memberships[i].account_id);",
+									"        }",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-account/users/{{USER_ID}}/memberships",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-account",
+								"users",
+								"{{USER_ID}}",
+								"memberships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Catalogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7efcf6ae-0127-4d09-bb32-1562ae29e4b0",
+								"exec": [
+									"pm.test(\"Set Catalog variables\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    for(var i=0; i<jsonData.Catalogs.length; i++) {",
+									"        if (jsonData.Catalogs[i].service_type === \"waf\") {",
+									"            pm.globals.set(\"WAF_CATALOG_ID\", jsonData.Catalogs[i].catalog_id);",
+									"        }",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-catalog/catalogs",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-catalog",
+								"catalogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EAP Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bde3ad3e-a3bc-4506-916c-a94e37e928e0",
+								"exec": [
+									"pm.test(\"Find previously created subscription\", function() {",
+									"    const jsonData = pm.response.json();",
+									"    const app_name = pm.environment.get(\"APP_NAME\");",
+									"    for(var i=0; i < jsonData.subscriptions.length; i++) {",
+									"        const subscription = jsonData.subscriptions[i];",
+									"        if (subscription.service_instance_name === app_name) {",
+									"            pm.globals.set(\"WAF_SERVICE_INSTANCE_ID\", subscription.service_instance_id);",
+									"            pm.globals.set(\"WAF_SUBSCRIPTION_ID\", subscription.subscription_id);",
+									"            pm.globals.set(\"WAF_CNAME\", subscription.configuration.details.CNAMEValue);",
+									"        }",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions?account_id={{ACCOUNT_ID}}&service_type=waf",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions"
+							],
+							"query": [
+								{
+									"key": "account_id",
+									"value": "{{ACCOUNT_ID}}"
+								},
+								{
+									"key": "service_type",
+									"value": "waf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update EAP Subscription - copy application -",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "70858c05-2809-44f8-89fb-3963c86660a2",
+								"exec": [
+									"pm.test(\"Set EAP subscription id variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.globals.set(\"WAF_SUBSCRIPTION_ID\", jsonData.subscription_id);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_id\": \"{{ACCOUNT_ID}}\",\n    \"catalog_id\": \"{{WAF_CATALOG_ID}}\",\n    \"service_instance_name\": \"{{APP_NAME}}\",\n    \"configuration\": {\n        \"waf_service\":  \n\n\n\n\n#### Replace me with application setup\n\n\n\n\n    },\n    \"service_type\": \"waf\"\n}"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions/{{WAF_SUBSCRIPTION_ID}}",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions",
+								"{{WAF_SUBSCRIPTION_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Clean up",
+			"item": [
+				{
+					"name": "Suspend EAP Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "086eb0e9-2990-40b0-b654-b1f76259ca7d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions/{{WAF_SUBSCRIPTION_ID}}/suspend",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions",
+								"{{WAF_SUBSCRIPTION_ID}}",
+								"suspend"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retire EAP Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e5fc3aad-b629-449b-87e2-4972e7a6bbd8",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{ACCESS_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subscription_id\": \"{{WAF_SUBSCRIPTION_ID}}\",\n  \"omit_config\": true\n}"
+						},
+						"url": {
+							"raw": "https://{{HOSTNAME}}/{{API_VERSION}}/svc-subscription/subscriptions/{{WAF_SUBSCRIPTION_ID}}/retire",
+							"protocol": "https",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"path": [
+								"{{API_VERSION}}",
+								"svc-subscription",
+								"subscriptions",
+								"{{WAF_SUBSCRIPTION_ID}}",
+								"retire"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Demo Attacks",
+			"item": [
+				{
+					"name": "Attack: SQL Injection Copy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows; U; Windows NT 5.1; pt-PT; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{APP_FQDN}}/trading/index.php?id=%25%27+or+0%3D0&Submit=Submit",
+							"protocol": "http",
+							"host": [
+								"{{APP_FQDN}}"
+							],
+							"path": [
+								"trading",
+								"index.php"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "%25%27+or+0%3D0"
+								},
+								{
+									"key": "Submit",
+									"value": "Submit"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Attack: Illegal Filetype Copy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows; U; Windows NT 5.1; pt-PT; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{APP_FQDN}}/nginx.config",
+							"protocol": "http",
+							"host": [
+								"{{APP_FQDN}}"
+							],
+							"path": [
+								"nginx.config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Attack: Threat Campaign Copy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/3.0 (compatible; Indy Library)",
+								"type": "text"
+							},
+							{
+								"key": "X-Virtual-Server-Port",
+								"value": "8080",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Og==",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{APP_FQDN}}/manager/html",
+							"protocol": "http",
+							"host": [
+								"{{APP_FQDN}}"
+							],
+							"path": [
+								"manager",
+								"html"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
